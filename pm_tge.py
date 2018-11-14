@@ -1,3 +1,5 @@
+#!python3
+#pylint: disable="
 import sys
 import operator
 import math
@@ -90,13 +92,13 @@ class State:
         
     # (int,int), finish_line - > int, move_direction
     #calc distance from wall and give the best move
-    def distance_from_fl(self, player_cord, vw_lst, hw_lst, finish_line):
+    def distance_from_fl(self, cord, vw_lst, hw_lst, finish_line):
         board = np.array([[100 for i in range(9)] for j in range(9)])
         if finish_line == Finish_line.LEFT:
             board[:,0] = 0
             for c in range(9):
                 for r in range(9):
-                    for n in neighbors(r,c, vw_lst, hw_lst):
+                    for n in self.neighbors((r, c)):
                         n_x, n_y = n[0], n[1]
                         if board[r][c] + 1 < board[n_x][n_y]:
                             board[n_x][n_y] = board[r][c] + 1
@@ -104,14 +106,15 @@ class State:
             board[:,8] = 0
             for c in reversed(range(9)):
                 for r in range(9):
-                    for n in neighbors(r,c, vw_lst, hw_lst):
+                    for n in self.neighbors((r, c)):
                         n_x, n_y = n[0], n[1]
                         if board[r][c] + 1 < board[n_x][n_y]:
                             board[n_x][n_y] = board[r][c] + 1
         elif finish_line == Finish_line.UP:
             board[0] = 0
             for r in range(9):
-                for c in range(9): for n in neighbors(r,c, vw_lst, hw_lst):
+                for c in range(9): 
+                    for n in self.neighbors((r, c)):
                         n_x, n_y = n[0], n[1]
                         if board[r][c] + 1 < board[n_x][n_y]:
                             board[n_x][n_y] = board[r][c] + 1
@@ -119,13 +122,13 @@ class State:
             board[8] = 0
             for r in reversed(range(9)):
                 for c in range(9):
-                    for n in neighbors(r,c, vw_lst, hw_lst):
+                    for n in self.neighbors((r, c)):
                         n_x, n_y = n[0], n[1]
                         if board[r][c] + 1 < board[n_x][n_y]:
                             board[n_x][n_y] = board[r][c] + 1
 
-        best_neighbor = min([(board[x[0]][x[1]],x) for x in neighbors(player_cord, vw_lst,hw_lst)], key = itemgetter(0))
-        best_move = diff_pair(best_neighbor, player_cord)
+        best_neighbor = min([(board[x[0]][x[1]],x) for x in self.neighbors(cord)], key = itemgetter(0))
+        best_move = diff_pair(best_neighbor, cord)
         return board[player_cord[0]][player_cord[1]], best_move 
 
     #checks if wall can be placed in given cordinates
